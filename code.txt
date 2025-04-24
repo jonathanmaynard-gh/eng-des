@@ -1,0 +1,68 @@
+int VRH = 0;
+int VLH = 0;
+int VRF = 0;
+int VLF = 0;
+float R1 = 10000;
+float logRRH, logRLH, logRRF, logRLF, RRH, RLH, RRF, RLF, TRH, TLH, TRF, TLF;
+float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
+
+void setup() {
+Serial.begin(9600);
+pinMode(A0, INPUT);
+pinMode(A1, INPUT);
+pinMode(A2, INPUT);
+pinMode(A3, INPUT);
+pinMode(4, OUTPUT);
+pinMode(5, OUTPUT);
+pinMode(6, OUTPUT);
+pinMode(7, OUTPUT);
+}
+
+void loop() {
+  //voltage reading for extremities
+  VRH = analogRead(A0); //right hand
+  VLH = analogRead(A1); //left hand
+  VRF = analogRead(A2); //right foot
+  VLF = analogRead(A3); //left foot
+
+  RRH = R1 * (1023.0 / (float)VRH - 1.0);
+  RLH = R1 * (1023.0 / (float)VLH - 1.0);
+  RRF = R1 * (1023.0 / (float)VRF - 1.0);
+  RLF = R1 * (1023.0 / (float)VLF - 1.0);
+  
+  logRRH = log(RRH);
+  logRLH = log(RLH);
+  logRRF = log(RRF);
+  logRLF = log(RLF);
+
+  TRH = (((1.0 / (c1 + c2*logRRH + c3*logRRH*logRRH*logRRH)) - 273.15) * 9.0)/ 5.0 + 32.0; 
+  TLH = (((1.0 / (c1 + c2*logRLH + c3*logRLH*logRLH*logRLH)) - 273.15) * 9.0)/ 5.0 + 32.0; 
+  TRF = (((1.0 / (c1 + c2*logRRF + c3*logRRF*logRRF*logRRF)) - 273.15) * 9.0)/ 5.0 + 32.0; 
+  TLF = (((1.0 / (c1 + c2*logRLF + c3*logRLF*logRLF*logRLF)) - 273.15) * 9.0)/ 5.0 + 32.0; 
+  
+  delay(500);
+
+  if (-100 &lt; TRH && TRH &lt; 32) {
+    digitalWrite(4, HIGH);
+  } else {
+        digitalWrite(4, LOW);
+  }
+  
+  if (-100 &lt; TLH && TLH &lt; 32) {
+    digitalWrite(5, HIGH);
+  } else {
+        digitalWrite(5, LOW);
+  }
+  
+  if (-100 &lt; TRF && TRF &lt; 32) {
+    digitalWrite(6, HIGH);
+  } else {
+        digitalWrite(6, LOW);
+  }
+  
+  if (-100 &lt; TLF && TLF &lt; 32) {
+    digitalWrite(7, HIGH);
+  } else {
+        digitalWrite(7, LOW);
+  }
+}
